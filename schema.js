@@ -13,11 +13,20 @@ var GraphQLSchema = require('graphql').GraphQLSchema;
 var GraphQLString = require('graphql').GraphQLString
 var fetch = require('node-fetch');
 
-const BASE_URL = 'https://jsonplaceholder.typicode.com/';
+const BASE_URL = 'https://jsonplaceholder.typicode.com';
 
 function getPostById(id) {
-  return fetch(`${BASE_URL}/posts/${id}`) //API call for posts/1 say.
+  console.log(id);
+  return fetch(`${BASE_URL}/posts/${id}`,{
+    headers:{
+      'Content-Type': 'application/json'
+    }
+  }) //API call for posts/1 say.
     .then(res => res.json())
+    .then(data => { 
+      console.log(data);
+      return data;
+    });
 }
 
 function getAllPosts() {
@@ -49,11 +58,6 @@ const PostType = new GraphQLObjectType({
     id: { type: GraphQLString },
     user: {
       type: UserType, //need to declare the usertype
-      args: {
-        id: {
-          type: GraphQLString
-        }
-      },
       resolve: (post) => getUser(post.userId)
     }
   })
@@ -63,21 +67,17 @@ const QueryType = new GraphQLObjectType({
   name: 'Query',
   description: '...',
   fields: () => ({
-    post: PostType, //needs to be declared
-    args: {
-      id: {
-        type: GraphQLString
-      }
+    post: {
+      type: PostType, //needs to be declared
+      args: {
+        id: { type: GraphQLString }
+      },
+      resolve: (root, args) => getPostById(args.id),
     },
-    resolve: (root, args) => getPostById(args.id),
-
-    // posts: {
-    //   type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PostType))), //array of posts
-    //   args: {},
-    //   resolve: (root, args) =>
-    //     fetch(`${BASE_URL}/posts`) //API call for all posts.
-    //       .then(res => res.json())
-    // },
+    posts: {
+      type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(PostType))), //array of posts
+      resolve: () => getAllPosts()
+    },
   })
 });
 
