@@ -35,7 +35,7 @@ function getAllPosts() {
 }
 
 function getUser(id) {
-  return fetch(`${BASE_URL}/users/${id}`) //API call for posts/1 say.
+  return fetch(`${BASE_URL}/users/${id}`) //API call for users/1 say.
     .then(res => res.json())
 }
 
