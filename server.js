@@ -1,11 +1,10 @@
 var express = require('express');
 var graphqlHTTP = require('express-graphql');
-import schema from './schema';
+var schema = require('./schema');
 const app = express();
 
 app.use(graphqlHTTP({
-    schema: schema,
-    rootValue: root,
+    schema,
     graphiql: true,
 }));
 app.listen(4000);
